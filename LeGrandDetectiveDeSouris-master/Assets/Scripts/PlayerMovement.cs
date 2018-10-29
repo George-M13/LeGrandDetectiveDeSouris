@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour {
     public float MaxSpeed = 6;
     public float Dir;
 
+    public bool IsJumping;
     public bool IsGrounded;
     public bool IsWallRunning = false;
     public bool CanWallJump;
@@ -30,6 +31,17 @@ public class PlayerMovement : MonoBehaviour {
 
     public Vector3 localVel;
 
+    public PlayerState currentState;
+
+    public enum PlayerState
+    {
+        idle,
+        moving,
+        wallrunning,
+        falling,
+        climbing
+    }
+
 
     void Start () {
         rb = this.GetComponent<Rigidbody>();
@@ -39,48 +51,54 @@ public class PlayerMovement : MonoBehaviour {
 
     void FixedUpdate()
     {
+
+        switch (currentState)
+        {
+            case PlayerState.idle:
+                xSpeed = 0;
+                zSpeed = 0;
+                break;
+            case PlayerState.moving:
+                Move();
+                break;
+            case PlayerState.wallrunning:
+                break;
+            case PlayerState.falling:
+                break;
+        }
         if (!IsWallRunning) x = Input.GetAxis("Horizontal");
         //Get the input
         z = Input.GetAxis("Vertical");
 
-        if (isMoving() && (!IsSliding || !IsWallRunning))
-        {
-            zSpeed += Time.deltaTime * acceleration;
-            xSpeed += Time.deltaTime * acceleration;
-        } //Add acceleration if the player is moving
-        else if ((!IsSliding || !IsWallRunning))
-        {
-            xSpeed = 0;
-            zSpeed = 0;
-        }
-        if (IsGrounded) IsWallRunning = false;
-        if (zSpeed >= 6 && (!IsSliding && !IsWallRunning)) zSpeed = MaxSpeed;
-        if (xSpeed >= 6 && (!IsSliding && !IsWallRunning)) xSpeed = 6;//Limit the speed
-
-        if (!IsWallRunning)
-        {
-            localVel = transform.InverseTransformDirection(rb.velocity);//Convert velocity from world to local
-            localVel.x = x * xSpeed; //Modify the velocity
-                                     /*if (transform.rotation.y > 0 && transform.rotation.y < 1)
-                                     {
-                                         ZEDdir = 1;
-                                     }
-                                     else ZEDdir = -1;*/
-
-            localVel.z = z * zSpeed;
-            rb.velocity = transform.TransformDirection(localVel);//Convert back from local to world
-        }
         //Debug.Log(rb.velocity);
 
         //Debug.Log(ZEDdir);
 
+        localVel = transform.InverseTransformDirection(rb.velocity);//Convert velocity from world to local
+        localVel.x = x * xSpeed; //Modify the velocity
+                                 /*if (transform.rotation.y > 0 && transform.rotation.y < 1)
+                                 {
+                                     ZEDdir = 1;
+                                 }
+                                 else ZEDdir = -1;*/
+
+        localVel.z = z * zSpeed;
+        rb.velocity = transform.TransformDirection(localVel);//Convert back from local to world
+        if (zSpeed >= MaxSpeed && (!IsSliding)) zSpeed = MaxSpeed;
+        if (xSpeed >= 6 && (!IsSliding)) xSpeed = 6;//Limit the speed
+
+        if (currentState != PlayerState.wallrunning && isMoving()) currentState = PlayerState.moving;
+
+        if (!isMoving()) currentState = PlayerState.idle;
+
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded == true)//If the player presses the space bar they can jump
         {
             this.rb.velocity += Vector3.up * 5.3f;
+            IsJumping = true;
             IsGrounded = false;
-
-
         }
+
+        if (IsGrounded) IsJumping = false;
 
 
         RaycastHit hit;
@@ -149,5 +167,26 @@ public class PlayerMovement : MonoBehaviour {
     {
         rb.velocity += transform.up * 3;
         rb.velocity -= new Vector3(0, 0, 3);
+    }
+
+    public void Move()
+    {
+        x = Input.GetAxis("Horizontal");
+        //Get the input
+        z = Input.GetAxis("Vertical");
+
+        if ( !IsSliding)
+        {
+            zSpeed += Time.deltaTime * acceleration;
+            xSpeed += Time.deltaTime * acceleration;
+        } //Add acceleration if the player is moving
+        else if (!IsSliding)
+        {
+            
+        }
+        if (IsGrounded) IsWallRunning = false;
+        
+
+            
     }
 }

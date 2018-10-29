@@ -6,6 +6,7 @@ public class OnConveyor : MonoBehaviour {
 
     PlayerMovement pm;
     public Rigidbody rb;
+    public Rigidbody cRb;
     public BoxCollider col;
     public float strength = 50;
 
@@ -26,5 +27,6 @@ public class OnConveyor : MonoBehaviour {
         {
             rb.AddForce(transform.forward * strength, ForceMode.Force);
         }
+        coll.transform.GetComponent<Rigidbody>().AddForce(transform.forward * strength/4, ForceMode.Force);
     }
 }
