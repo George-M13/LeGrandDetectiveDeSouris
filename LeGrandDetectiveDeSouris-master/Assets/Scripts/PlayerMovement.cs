@@ -9,13 +9,15 @@ public class PlayerMovement : MonoBehaviour {
     WallRun wr;
     
     float x;
-    float z;
+    public float z;
     float ZEDdir;
+
     private float acceleration = 2f;
-    public float zSpeed = 0;
-    public float xSpeed = 0;
+    public float zSpeed = 1;
+    public float xSpeed = 1;
     public float MaxSpeed = 6;
     public float Dir;
+    public float count = 0;
 
     public bool IsJumping;
     public bool IsGrounded;
@@ -39,7 +41,9 @@ public class PlayerMovement : MonoBehaviour {
         moving,
         wallrunning,
         falling,
-        climbing
+        climbing,
+        jumping,
+        walljumping
     }
 
 
@@ -55,8 +59,8 @@ public class PlayerMovement : MonoBehaviour {
         switch (currentState)
         {
             case PlayerState.idle:
-                xSpeed = 0;
-                zSpeed = 0;
+                xSpeed = 1;
+                zSpeed = 1;
                 break;
             case PlayerState.moving:
                 Move();
@@ -64,6 +68,17 @@ public class PlayerMovement : MonoBehaviour {
             case PlayerState.wallrunning:
                 break;
             case PlayerState.falling:
+                break;
+            case PlayerState.jumping:
+                Move();
+                count += 2 * Time.deltaTime;
+                if (count >= 1.5f)
+                {
+                    currentState = PlayerState.falling;
+                    count = 0;
+                }
+                break;
+            case PlayerState.walljumping:
                 break;
         }
         if (!IsWallRunning) x = Input.GetAxis("Horizontal");
@@ -84,21 +99,26 @@ public class PlayerMovement : MonoBehaviour {
 
         localVel.z = z * zSpeed;
         rb.velocity = transform.TransformDirection(localVel);//Convert back from local to world
+
         if (zSpeed >= MaxSpeed && (!IsSliding)) zSpeed = MaxSpeed;
+        if (zSpeed >= 10 && (!IsSliding)) zSpeed = 10;
         if (xSpeed >= 6 && (!IsSliding)) xSpeed = 6;//Limit the speed
 
-        if (currentState != PlayerState.wallrunning && isMoving()) currentState = PlayerState.moving;
+        if (IsGrounded && isMoving()) currentState = PlayerState.moving;
 
-        if (!isMoving()) currentState = PlayerState.idle;
+        if (!isMoving()&&IsGrounded)
+        {
+            currentState = PlayerState.idle;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded == true)//If the player presses the space bar they can jump
         {
+            currentState = PlayerState.jumping;
             this.rb.velocity += Vector3.up * 5.3f;
-            IsJumping = true;
             IsGrounded = false;
         }
 
-        if (IsGrounded) IsJumping = false;
+        //if (IsGrounded) IsJumping = false;
 
 
         RaycastHit hit;
@@ -128,6 +148,8 @@ public class PlayerMovement : MonoBehaviour {
         {
             BackStep();
         }
+
+        if (currentState == PlayerState.moving && !IsGrounded) currentState = PlayerState.falling;
 
     }
 

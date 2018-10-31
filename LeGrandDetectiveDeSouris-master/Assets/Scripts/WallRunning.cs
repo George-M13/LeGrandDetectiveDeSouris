@@ -9,6 +9,7 @@ public class WallRunning : MonoBehaviour {
     Rigidbody rb;
 
     public float height;
+    public float maxSpeed = 8;
 
     GameObject lastWall;
 
@@ -33,6 +34,7 @@ public class WallRunning : MonoBehaviour {
         {
             lastWall = null;
             pm.IsWallRunning = false;
+            maxSpeed = 8;
             //jumping = false;
             //timer = 0;
         }
@@ -47,9 +49,14 @@ public class WallRunning : MonoBehaviour {
         {
             //Debug.Log(pm.zSpeed);
             rb.velocity = new Vector3(0, height, this.rb.velocity.z );
-            pm.zSpeed = lastSpeed + 2;
+            float newSpeed = lastSpeed + 2;
+            if (newSpeed >= maxSpeed) newSpeed = maxSpeed;
+            if (maxSpeed <= 0) maxSpeed = 0;
+            
+            maxSpeed-= Time.deltaTime;
+            pm.zSpeed = newSpeed;
             height = height - Time.deltaTime;
-            Debug.Log(height);
+            //Debug.Log(height);
         }
         else
         {
@@ -98,8 +105,7 @@ public class WallRunning : MonoBehaviour {
         }
         else
         {
-            if (pm.IsGrounded && pm.currentState != PlayerMovement.PlayerState.moving) pm.currentState = PlayerMovement.PlayerState.idle;
-            else if(pm.currentState !=PlayerMovement.PlayerState.moving) pm.currentState = PlayerMovement.PlayerState.falling;
+            //if (pm.IsGrounded && pm.currentState != PlayerMovement.PlayerState.moving) pm.currentState = PlayerMovement.PlayerState.idle;
             pm.IsWallRunning = false;
             pm.CanWallJump = false;
             pm.MaxSpeed = 6;
@@ -113,9 +119,11 @@ public class WallRunning : MonoBehaviour {
     public void WallJump(int w)
     {
         //jumping = true;
+        
         pm.IsWallRunning = false;
         rb.velocity += new Vector3(0, 3, 0);
-        
+        pm.currentState = PlayerMovement.PlayerState.jumping;
+
     }
 }
 
