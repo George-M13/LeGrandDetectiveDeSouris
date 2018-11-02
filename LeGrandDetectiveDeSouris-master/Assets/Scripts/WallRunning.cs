@@ -64,7 +64,7 @@ public class WallRunning : MonoBehaviour {
             height = 0;
         }
 
-        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false)
+        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
         {
             pm.IsWallRunning = true;
             pm.currentState = PlayerMovement.PlayerState.wallrunning;
@@ -83,7 +83,7 @@ public class WallRunning : MonoBehaviour {
                 pm.CanWallJump = false;
             }
         }
-        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false)
+        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
         {
             pm.currentState = PlayerMovement.PlayerState.wallrunning;
             pm.IsWallRunning = true;
@@ -122,7 +122,7 @@ public class WallRunning : MonoBehaviour {
         
         pm.IsWallRunning = false;
         rb.velocity += new Vector3(0, 3, 0);
-        pm.currentState = PlayerMovement.PlayerState.jumping;
+        pm.currentState = PlayerMovement.PlayerState.walljumping;
 
     }
 }

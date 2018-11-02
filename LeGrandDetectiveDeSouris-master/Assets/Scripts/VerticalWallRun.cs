@@ -11,7 +11,7 @@ public class VerticalWallRun : MonoBehaviour
     float counter = 0;
     float lastZ;
      float startY = 40;
-    float y;
+    public float y;
     public bool hasChecked = false;
     GameObject lastWall = null;
     // Use this for initialization
@@ -28,7 +28,7 @@ public class VerticalWallRun : MonoBehaviour
         
         RaycastHit hit;
         float distToWall = this.GetComponent<SphereCollider>().bounds.extents.z;
-        if (Physics.Raycast(pos.transform.position, transform.forward, out hit, distToWall + 1) && pm.IsGrounded == false  && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.walljumping) && lastWall != hit.collider.gameObject)
+        if (Physics.Raycast(pos.transform.position, transform.forward, out hit, distToWall + 0.25f) && pm.IsGrounded == false  && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.walljumping) && lastWall != hit.collider.gameObject && hit.transform.tag == "wall")
         {
 
             if (lastWall != hit.collider.gameObject)
@@ -47,6 +47,8 @@ public class VerticalWallRun : MonoBehaviour
         }
         if (hasChecked && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.climbing))
         {
+            Debug.Log(lastWall.gameObject.transform.lossyScale.y);
+
             pm.currentState = PlayerMovement.PlayerState.climbing;
             //Debug.Log(y );
             pm.GetComponent<Rigidbody>().velocity = new Vector3(0, y * Time.deltaTime * 10, 0);
@@ -62,40 +64,45 @@ public class VerticalWallRun : MonoBehaviour
 
             if (y <= 2)
             {
-                Debug.Log("w");
-                if (Input.GetKey(KeyCode.W))
+
+                /*if (Input.GetKey(KeyCode.W) )
                 {
-                    pm.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        Debug.Log("aoujgikgsd");
-                        pm.currentState = PlayerMovement.PlayerState.falling;
-
-                        rb.velocity = new Vector3(0, 3, this.rb.velocity.z);
-
-                    }
+                    
                 }
 
                 else
                 {
                     pm.currentState = PlayerMovement.PlayerState.walljumping;
                     y = 0;
+                }*/
+                Debug.Log(this.transform.position.y);
+                if (Input.GetKey(KeyCode.Mouse1))
+                {
+                    pm.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+
+                        pm.currentState = PlayerMovement.PlayerState.walljumping;
+                        rb.velocity = transform.up * 2;
+                        rb.velocity = transform.forward * 2;
+
+                    }
+                }
+                else
+                {
+                    pm.zSpeed = 0;
+                    pm.currentState = PlayerMovement.PlayerState.falling;
                 }
 
             }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Debug.Log("aoujgikgsd");
-                pm.currentState = PlayerMovement.PlayerState.jumping;
-                
-                rb.velocity +=  new Vector3(0, 3,0) ;
-                
-            }
+            
 
         }
        else y = startY;
-        if (pm.currentState == PlayerMovement.PlayerState.climbing && this.transform.position.y >= (lastWall.gameObject.transform.localScale.y))
+        
+        if (pm.currentState == PlayerMovement.PlayerState.climbing && this.transform.position.y >= (lastWall.gameObject.transform.lossyScale.y))
         {
+            pm.zSpeed = 1;
             pm.currentState = PlayerMovement.PlayerState.falling;
         }
                

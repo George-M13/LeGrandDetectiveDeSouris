@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour {
     float x;
     public float z;
     float ZEDdir;
+    float slideSpeed = 0;
+    public float slideCounter = 0;
 
     private float acceleration = 2f;
     public float zSpeed = 1;
@@ -43,7 +45,9 @@ public class PlayerMovement : MonoBehaviour {
         falling,
         climbing,
         jumping,
-        walljumping
+        walljumping,
+        pipeclimbing,
+        pipeswinging
     }
 
 
@@ -80,11 +84,19 @@ public class PlayerMovement : MonoBehaviour {
                 break;
             case PlayerState.walljumping:
                 break;
+            case PlayerState.pipeclimbing:
+                zSpeed = 0;
+                xSpeed = 0;
+                break;
+            case PlayerState.pipeswinging:
+                Move();
+                break;
+            
         }
         if (!IsWallRunning) x = Input.GetAxis("Horizontal");
         //Get the input
-        z = Input.GetAxis("Vertical");
-
+        if(currentState != PlayerState.pipeclimbing) z = Input.GetAxis("Vertical");
+        //Debug.Log(currentState);
         //Debug.Log(rb.velocity);
 
         //Debug.Log(ZEDdir);
@@ -98,13 +110,14 @@ public class PlayerMovement : MonoBehaviour {
                                  else ZEDdir = -1;*/
 
         localVel.z = z * zSpeed;
-        rb.velocity = transform.TransformDirection(localVel);//Convert back from local to world
+        if (currentState != PlayerState.pipeclimbing /*|| currentState != PlayerState.pipeswinging*/)  rb.velocity = transform.TransformDirection(localVel);
+        //Convert back from local to world
 
         if (zSpeed >= MaxSpeed && (!IsSliding)) zSpeed = MaxSpeed;
         if (zSpeed >= 10 && (!IsSliding)) zSpeed = 10;
         if (xSpeed >= 6 && (!IsSliding)) xSpeed = 6;//Limit the speed
 
-        if (IsGrounded && isMoving()) currentState = PlayerState.moving;
+        if (IsGrounded && isMoving() && currentState != PlayerState.jumping) currentState = PlayerState.moving;
 
         if (!isMoving()&&IsGrounded)
         {
@@ -113,16 +126,18 @@ public class PlayerMovement : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded == true)//If the player presses the space bar they can jump
         {
-            currentState = PlayerState.jumping;
-            this.rb.velocity += Vector3.up * 5.3f;
             IsGrounded = false;
+            this.rb.velocity += Vector3.up * 5f;
+            currentState = PlayerState.jumping;
+            
+            
         }
 
         //if (IsGrounded) IsJumping = false;
 
 
         RaycastHit hit;
-        if (rb.velocity.z > 1)
+        if (rb.velocity.z >= 1)
         {
             Dir = 1;
             velMap = Map(1, 6, 1, 2, rb.velocity.z); //Map the players Z velocity from 0 - 10 to 1 - 3
@@ -149,7 +164,7 @@ public class PlayerMovement : MonoBehaviour {
             BackStep();
         }
 
-        if (currentState == PlayerState.moving && !IsGrounded) currentState = PlayerState.falling;
+        //if (currentState == PlayerState.moving && !IsGrounded ) currentState = PlayerState.falling;
 
     }
 
@@ -196,7 +211,6 @@ public class PlayerMovement : MonoBehaviour {
         x = Input.GetAxis("Horizontal");
         //Get the input
         z = Input.GetAxis("Vertical");
-
         if ( !IsSliding)
         {
             zSpeed += Time.deltaTime * acceleration;
@@ -208,7 +222,31 @@ public class PlayerMovement : MonoBehaviour {
         }
         if (IsGrounded) IsWallRunning = false;
         
+    }
 
+    public void Climb(GameObject target)
+    {
+        
+        x = Input.GetAxis("Horizontal");
+        //Get the input
+        float y = Input.GetAxis("Vertical");
+
+        rb.velocity = new Vector3(0, y * slideSpeed, 0);
+        if (y == 1) slideSpeed = 1;
+        if (y == -1) slideCounter += Time.deltaTime;
+        else slideCounter = 0;
+        if (slideCounter >= 1) slideSpeed = 5;
+        else slideSpeed = 1;
+        //Debug.Log(-(x * 30 * Time.deltaTime));
+        transform.RotateAround(target.transform.position,transform.up, -(x * 30 * Time.deltaTime));
+        if (Input.GetKey(KeyCode.Space)){
+            currentState = PlayerState.jumping;
+            zSpeed = 3;
+            rb.velocity = transform.up * 3;
+            rb.velocity = transform.forward * 5;
             
+
+        }
+        
     }
 }
