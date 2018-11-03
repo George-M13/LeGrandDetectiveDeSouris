@@ -20,7 +20,6 @@ public class GroundCheck : MonoBehaviour {
         pm = player.GetComponent<PlayerMovement>();
         distToGround = coll.bounds.extents.y;//Get the bounds of the collider in the y direction
         pm.IsGrounded = CheckGrounded();
-        RaycastHit hit;
 
     }
 

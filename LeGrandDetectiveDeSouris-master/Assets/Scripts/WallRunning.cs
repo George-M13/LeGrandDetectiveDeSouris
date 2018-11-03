@@ -15,6 +15,7 @@ public class WallRunning : MonoBehaviour {
     float lastSpeed;
 
     float dir;
+    public RaycastHit hit;
 
 
 	// Use this for initialization
@@ -26,7 +27,6 @@ public class WallRunning : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         coll = this.GetComponent<SphereCollider>();
-        RaycastHit hit;
         float distToWall = coll.bounds.extents.x;
 
         if (pm.IsGrounded)
@@ -45,10 +45,12 @@ public class WallRunning : MonoBehaviour {
         }*/
         if (pm.IsWallRunning)
         {
+            if (lastSpeed == 0) lastSpeed = pm.zSpeed;
+            pm.zSpeed = 10;
             //Debug.Log(pm.zSpeed);
-            rb.velocity = new Vector3(0, height, this.rb.velocity.z );
+            rb.velocity = new Vector3(0, height, 8 *pm.Dir );
             height = height - Time.deltaTime;
-            Debug.Log(height);
+            //Debug.Log(height);
         }
         else
         {
@@ -63,7 +65,6 @@ public class WallRunning : MonoBehaviour {
             {
                 lastWall = hit.collider.gameObject;
                 pm.CanWallJump = true;
-                pm.MaxSpeed = 8;
             }
             if (lastWall == hit.collider.gameObject && !pm.CanWallJump) pm.IsWallRunning = false;
             if (Input.GetKeyDown(KeyCode.Space) && pm.IsWallRunning && pm.CanWallJump)
@@ -82,7 +83,6 @@ public class WallRunning : MonoBehaviour {
                 lastWall = hit.collider.gameObject;
 
                 pm.CanWallJump = true;
-                pm.MaxSpeed = 8;
             }
             
             if (lastWall == hit.collider.gameObject && !pm.CanWallJump) pm.IsWallRunning = false;
@@ -96,7 +96,6 @@ public class WallRunning : MonoBehaviour {
         {
             pm.IsWallRunning = false;
             pm.CanWallJump = false;
-            pm.MaxSpeed = 6;
         }
 
         

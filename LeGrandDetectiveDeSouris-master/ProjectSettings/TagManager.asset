@@ -7,7 +7,6 @@ TagManager:
   - climable
   - wall
   - player
-  - Conveyor
   layers:
   - Default
   - TransparentFX
