@@ -9,6 +9,7 @@ public class WallRunning : MonoBehaviour {
     Rigidbody rb;
 
     public float height;
+    public float maxSpeed = 8;
 
     GameObject lastWall;
 
@@ -33,6 +34,7 @@ public class WallRunning : MonoBehaviour {
         {
             lastWall = null;
             pm.IsWallRunning = false;
+            maxSpeed = 8;
             //jumping = false;
             //timer = 0;
         }
@@ -47,8 +49,14 @@ public class WallRunning : MonoBehaviour {
         {
             //Debug.Log(pm.zSpeed);
             rb.velocity = new Vector3(0, height, this.rb.velocity.z );
+            float newSpeed = lastSpeed + 2;
+            if (newSpeed >= maxSpeed) newSpeed = maxSpeed;
+            if (maxSpeed <= 0) maxSpeed = 0;
+            
+            maxSpeed-= Time.deltaTime;
+            pm.zSpeed = newSpeed;
             height = height - Time.deltaTime;
-            Debug.Log(height);
+            //Debug.Log(height);
         }
         else
         {
@@ -56,11 +64,13 @@ public class WallRunning : MonoBehaviour {
             height = 0;
         }
 
-        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false)
+        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
         {
             pm.IsWallRunning = true;
+            pm.currentState = PlayerMovement.PlayerState.wallrunning;
             if (lastWall != hit.collider.gameObject)
             {
+                lastSpeed = pm.zSpeed;
                 lastWall = hit.collider.gameObject;
                 pm.CanWallJump = true;
                 pm.MaxSpeed = 8;
@@ -73,12 +83,13 @@ public class WallRunning : MonoBehaviour {
                 pm.CanWallJump = false;
             }
         }
-        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false)
+        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
         {
-
+            pm.currentState = PlayerMovement.PlayerState.wallrunning;
             pm.IsWallRunning = true;
             if (lastWall != hit.collider.gameObject)
             {
+                lastSpeed = pm.zSpeed;
                 lastWall = hit.collider.gameObject;
 
                 pm.CanWallJump = true;
@@ -94,6 +105,7 @@ public class WallRunning : MonoBehaviour {
         }
         else
         {
+            //if (pm.IsGrounded && pm.currentState != PlayerMovement.PlayerState.moving) pm.currentState = PlayerMovement.PlayerState.idle;
             pm.IsWallRunning = false;
             pm.CanWallJump = false;
             pm.MaxSpeed = 6;
@@ -107,9 +119,11 @@ public class WallRunning : MonoBehaviour {
     public void WallJump(int w)
     {
         //jumping = true;
+        
         pm.IsWallRunning = false;
         rb.velocity += new Vector3(0, 3, 0);
-        
+        pm.currentState = PlayerMovement.PlayerState.walljumping;
+
     }
 }
 
