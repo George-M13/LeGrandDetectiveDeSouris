@@ -111,7 +111,7 @@ float4 ClipToAABB(float4 color, float p, float3 minimum, float3 maximum)
     {
         // `color` is intersecting (or inside) the AABB.
 
-        // Note: for whatever reason movingforward this return statement from this else into a higher
+        // Note: for whatever reason moving this return statement from this else into a higher
         // scope makes the NVIDIA drivers go beyond bonkers
         return color;
     }

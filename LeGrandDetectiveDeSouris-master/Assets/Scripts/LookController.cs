@@ -18,9 +18,9 @@ public class LookController : MonoBehaviour {
         rotY = rot.y;
 
 	}
-	
-	
-	void LateUpdate () {
+
+
+    void LateUpdate () {
         float mouseX = Input.GetAxis("Mouse X"); //Store the mouse input
         float mouseY = -Input.GetAxis("Mouse Y");
 
@@ -33,11 +33,15 @@ public class LookController : MonoBehaviour {
             Quaternion playerRot = Quaternion.Euler(0.0f, rotX, 0.0f);//Store just the x rotation
             player.transform.rotation = playerRot;//Rotate the player by the x axis with the camera
         }                  //so that the player's direction changes with the camera movement
+        Debug.Log("Hi Aled" + this.transform.rotation.z);
+        /*Quaternion initialCameraRotation = this.transform.rotation;
+        this.transform.rotation = Quaternion.AngleAxis(rotX, this.transform.up);
+        initialCameraRotation = this.transform.rotation;
+        this.transform.rotation = Quaternion.AngleAxis(rotY, this.transform.right) * initialCameraRotation;*/
+        Quaternion localRot = Quaternion.Euler(rotY, rotX, this.transform.rotation.z); //Combine the seperate rotations store them as rotations
+        this.transform.rotation = localRot; //Rotate the camera*/
 
-        Quaternion localRot = Quaternion.Euler(rotY, rotX, 0.0f); //Combine the seperate rotations store them as rotations
-        this.transform.rotation = localRot; //Rotate the camera
 
-        
 
 
 

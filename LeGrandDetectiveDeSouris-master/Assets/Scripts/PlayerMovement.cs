@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour {
     float ZEDdir;
     float slideSpeed = 0;
     public float slideCounter = 0;
+    public int CurrentForearmCycle = 0;
+
 
     private float acceleration = 2f;
     public float zSpeed = 1;
