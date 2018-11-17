@@ -2144,10 +2144,12 @@ MonoBehaviour:
   UpperArmRun:
   - {x: 0, y: 95, z: 120}
   - {x: 0, y: 95, z: -185}
+  runDuration: 5
   ForearmIdle:
   - {x: -40, y: 115, z: 230}
   UpperArmIdle:
   - {x: -15, y: 95, z: -180}
+  idleDuration: 5
   ForearmFalling:
   - {x: -36, y: 128, z: 160}
   - {x: -45, y: 132, z: 149}
@@ -2156,12 +2158,14 @@ MonoBehaviour:
   - {x: -136, y: -62, z: -73}
   - {x: -135, y: -48, z: -66}
   - {x: -128, y: -42, z: -81}
+  fallingDuration: 5
   ForearmJumping:
   - {x: -40, y: 137, z: 137}
   - {x: -61, y: 18, z: 301}
   UpperArmJumping:
   - {x: -118, y: -62, z: -24}
   - {x: -65, y: 18, z: -121}
+  jumpingDuration: 5
 --- !u!1001 &797722952
 Prefab:
   m_ObjectHideFlags: 0
@@ -2321,10 +2325,12 @@ MonoBehaviour:
   UpperArmRun:
   - {x: 0, y: 95, z: -185}
   - {x: 0, y: 95, z: 120}
+  runDuration: 5
   ForearmIdle:
   - {x: -40, y: 115, z: 230}
   UpperArmIdle:
   - {x: -15, y: 95, z: -180}
+  idleDuration: 5
   ForearmFalling:
   - {x: -45, y: 132, z: 149}
   - {x: -52, y: 138, z: -81}
@@ -2333,12 +2339,14 @@ MonoBehaviour:
   - {x: -136, y: -62, z: -73}
   - {x: -135, y: -48, z: -66}
   - {x: -128, y: -42, z: -81}
+  fallingDuration: 5
   ForearmJumping:
   - {x: -40, y: 137, z: 137}
   - {x: -61, y: 18, z: 301}
   UpperArmJumping:
   - {x: -118, y: -62, z: -24}
   - {x: -65, y: 18, z: -121}
+  jumpingDuration: 5
 --- !u!1 &843762344
 GameObject:
   m_ObjectHideFlags: 0
