@@ -13,8 +13,8 @@ public class PlayerMovement : MonoBehaviour {
     float ZEDdir;
     float slideSpeed = 0;
     public float slideCounter = 0;
-    public int CurrentForearmCycle = 0;
 
+    public int CurrentForearmCycle = 0;
 
     private float acceleration = 2f;
     public float zSpeed = 1;
@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour {
                 Move();
                 break;;
             case PlayerState.falling:
-                Move();
+                
                 break;
             case PlayerState.jumping:
                 //Move();
@@ -98,8 +98,12 @@ public class PlayerMovement : MonoBehaviour {
                 xSpeed = 0;
                 break;
             case PlayerState.pipeswinging:
-                Move();
+               
                 break;
+        }
+        if(currentState == PlayerState.jumping)
+        {
+            if (rb.velocity.y <= 0) currentState = PlayerState.falling;
         }
         if (!IsWallRunning) x = Input.GetAxis("Horizontal");
         //Get the input
@@ -118,15 +122,15 @@ public class PlayerMovement : MonoBehaviour {
                                  else ZEDdir = -1;*/
 
         localVel.z = z * zSpeed;
-        if (currentState == PlayerState.pipeclimbing || currentState == PlayerState.pipeswinging || currentState == PlayerState.climbing || currentState == PlayerState.gettingup) {
+        if (currentState == PlayerState.pipeclimbing || currentState == PlayerState.pipeswinging || currentState == PlayerState.climbing || currentState == PlayerState.gettingup || currentState == PlayerState.jumping || currentState == PlayerState.falling) {
 
 
-        } else
+        } else if(IsGrounded)
         {
             
             rb.velocity = transform.TransformDirection(localVel);
         }
-        Debug.Log(rb.velocity.z);
+        //Debug.Log(rb.velocity.z);
 
         //Convert back from local to world
 

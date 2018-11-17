@@ -16,8 +16,8 @@ public class VerticalWallRun : MonoBehaviour
     public bool wallGrab = false;
     public bool isGettingUp = false;
 
-    float h;
-    GameObject lastWall = null;
+    public float h;
+    public GameObject lastWall = null;
     Vector3 lastPos = new Vector3(0, 0, 0);
 
 
@@ -124,7 +124,7 @@ public class VerticalWallRun : MonoBehaviour
        else y = startY;
         //Debug.Log(this.transform.position.y - Floor.transform.position.y);
         RaycastHit wallHit;
-        Debug.Log(this.transform.position.y - pos.transform.localScale.y);
+        //Debug.Log(this.transform.position.y - pos.transform.localScale.y);
         if (pm.currentState == PlayerMovement.PlayerState.climbing && !Physics.Raycast(new Vector3(this.transform.position.x, this.transform.position.y-0.5f, this.transform.position.z), transform.forward, out wallHit, 1f) && wallGrab == false)
         {
             if (Physics.Raycast(new Vector3(this.transform.position.x, this.transform.position.y - pos.transform.localScale.y, this.transform.position.z), transform.forward, out wallHit, 1f)){
@@ -134,13 +134,26 @@ public class VerticalWallRun : MonoBehaviour
                 pm.currentState = PlayerMovement.PlayerState.gettingup;
             }
         }
-
+        Debug.DrawRay(new Vector3(this.transform.position.x, this.transform.position.y - pos.transform.localScale.y, this.transform.position.z), -transform.up, Color.green);
         if (pm.currentState == PlayerMovement.PlayerState.gettingup && !pm.IsGrounded)
         {
             if (h >= 2) pm.currentState = PlayerMovement.PlayerState.falling;
             rb.velocity = new Vector3(0, h, h);
-            h = h + 0.05f;
+            h = h + 1f * Time.deltaTime;
             
+            RaycastHit floorHit;
+
+            if (Physics.Raycast(new Vector3(this.transform.position.x, this.transform.position.y - pos.transform.localScale.y, this.transform.position.z), - transform.up,out floorHit, 5f))
+            {
+
+                Debug.Log(floorHit.transform.name);
+                if(floorHit.transform.gameObject == lastWall)
+                {
+                    pm.currentState = PlayerMovement.PlayerState.falling;
+                }
+                //else if (h >= 1f) pm.currentState = PlayerMovement.PlayerState.falling;
+            }
+
         }
         else h = 0;
                

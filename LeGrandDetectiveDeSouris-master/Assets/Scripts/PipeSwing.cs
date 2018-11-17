@@ -85,7 +85,7 @@ public class PipeSwing : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.S)&& !backwardPressed)
             {
                 
-                sp.GetComponent<Rigidbody>().AddForce(sp.transform.forward * 10, ForceMode.Impulse);
+                sp.GetComponent<Rigidbody>().AddForce(sp.transform.forward * 20, ForceMode.Impulse);
                 backwardPressed = true;
                 forwardPressed = false;
             }
