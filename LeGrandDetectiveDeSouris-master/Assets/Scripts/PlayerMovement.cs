@@ -40,17 +40,21 @@ public class PlayerMovement : MonoBehaviour {
     public enum PlayerState
     {
         idle,
-        moving,
-        wallrunning,
+        movingforward,
+        movingbackward,
+        leftwallrunning,
+        rightwallrunning,
         falling,
         climbing,
         jumping,
         walljumping,
+        gettingup,
         pipeclimbing,
         pipeclimbingidle,
         pipeclimbingturn,
         pipeswinging,
-        pipejumping
+        pipejumping,
+        sliding
     }
 
 
@@ -69,14 +73,14 @@ public class PlayerMovement : MonoBehaviour {
                 xSpeed = 1;
                 zSpeed = 1;
                 break;
-            case PlayerState.moving:
+            case PlayerState.movingforward:
                 Move();
                 break;
-            case PlayerState.wallrunning:
-                break;
+            case PlayerState.movingbackward:
+                Move();
+                break;;
             case PlayerState.falling:
-                break;
-            case PlayerState.climbing:
+                Move();
                 break;
             case PlayerState.jumping:
                 //Move();
@@ -87,8 +91,6 @@ public class PlayerMovement : MonoBehaviour {
                     count = 0;
                 }
                 break;
-            case PlayerState.walljumping:
-                break;
             case PlayerState.pipeclimbing:
                 zSpeed = 0;
                 xSpeed = 0;
@@ -96,9 +98,6 @@ public class PlayerMovement : MonoBehaviour {
             case PlayerState.pipeswinging:
                 Move();
                 break;
-            case PlayerState.pipejumping:
-                break;
-            
         }
         if (!IsWallRunning) x = Input.GetAxis("Horizontal");
         //Get the input
@@ -107,7 +106,7 @@ public class PlayerMovement : MonoBehaviour {
         //Debug.Log(rb.velocity);
 
         //Debug.Log(ZEDdir);
-        Debug.Log(currentState);
+        //Debug.Log(currentState);
         localVel = transform.InverseTransformDirection(rb.velocity);//Convert velocity from world to local
         localVel.x = x * xSpeed; //Modify the velocity
                                  /*if (transform.rotation.y > 0 && transform.rotation.y < 1)
@@ -117,14 +116,15 @@ public class PlayerMovement : MonoBehaviour {
                                  else ZEDdir = -1;*/
 
         localVel.z = z * zSpeed;
-        if (currentState == PlayerState.pipeclimbing || currentState == PlayerState.pipeswinging) {
-            
-            
-        }else
+        if (currentState == PlayerState.pipeclimbing || currentState == PlayerState.pipeswinging || currentState == PlayerState.climbing || currentState == PlayerState.gettingup) {
+
+
+        } else
         {
-            Debug.Log("AMMOVINGIAM");
+            
             rb.velocity = transform.TransformDirection(localVel);
         }
+        Debug.Log(rb.velocity.z);
 
         //Convert back from local to world
 
@@ -132,7 +132,7 @@ public class PlayerMovement : MonoBehaviour {
         if (zSpeed >= 10 && (!IsSliding)) zSpeed = 10;
         if (xSpeed >= 6 && (!IsSliding)) xSpeed = 6;//Limit the speed
 
-        if (IsGrounded && isMoving() && currentState != PlayerState.jumping) currentState = PlayerState.moving;
+        if (IsGrounded && isMoving() && currentState != PlayerState.jumping) currentState = PlayerState.movingforward;
 
         if (!isMoving()&&IsGrounded)
         {
@@ -142,10 +142,8 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded == true)//If the player presses the space bar they can jump
         {
             IsGrounded = false;
-            this.rb.velocity += Vector3.up * 5f;
             currentState = PlayerState.jumping;
-            
-            
+            this.rb.velocity += Vector3.up * 5f;
         }
 
         //if (IsGrounded) IsJumping = false;
@@ -167,7 +165,7 @@ public class PlayerMovement : MonoBehaviour {
 
 
         //Check if the raycast hit in the mapped distance 
-        //while moving above a certain speed
+        //while movingforward above a certain speed
         //and not jumping so that it can't trigger in air
         /*if (Physics.Raycast(transform.position, transform.forward, out hit, velMap) && IsGrounded == true && (rb.velocity.z >= 4 || rb.velocity.z <= -4) && hit.collider.tag == "climable") 
          {
@@ -179,12 +177,12 @@ public class PlayerMovement : MonoBehaviour {
             BackStep();
         }
 
-        //if (currentState == PlayerState.moving && !IsGrounded ) currentState = PlayerState.falling;
+        //if (currentState == PlayerState.movingforward && !IsGrounded ) currentState = PlayerState.falling;
 
     }
 
     //Movement check 
-    //only returns true if moving
+    //only returns true if movingforward
     bool isMoving() 
     {
         if (x > 0 || x < 0 || z > 0 || z < 0) return true;
@@ -226,11 +224,14 @@ public class PlayerMovement : MonoBehaviour {
         x = Input.GetAxis("Horizontal");
         //Get the input
         z = Input.GetAxis("Vertical");
-        if ( !IsSliding)
+        if (z > 0) currentState = PlayerState.movingforward;
+        else if (z < 0) currentState = PlayerState.movingbackward;
+
+        if (!IsSliding)
         {
             zSpeed += Time.deltaTime * acceleration;
             xSpeed += Time.deltaTime * acceleration;
-        } //Add acceleration if the player is moving
+        } //Add acceleration if the player is movingforward
         else if (!IsSliding)
         {
             

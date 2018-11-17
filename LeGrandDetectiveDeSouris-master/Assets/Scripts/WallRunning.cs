@@ -64,10 +64,11 @@ public class WallRunning : MonoBehaviour {
             height = 0;
         }
 
-        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
+        if (Physics.Raycast(transform.position, -transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState == PlayerMovement.PlayerState.jumping && pm.currentState != PlayerMovement.PlayerState.walljumping)
         {
             pm.IsWallRunning = true;
-            pm.currentState = PlayerMovement.PlayerState.wallrunning;
+            //Debug.Log("JIIJPJINJHLJK");
+            pm.currentState = PlayerMovement.PlayerState.leftwallrunning;
             if (lastWall != hit.collider.gameObject)
             {
                 lastSpeed = pm.zSpeed;
@@ -83,9 +84,9 @@ public class WallRunning : MonoBehaviour {
                 pm.CanWallJump = false;
             }
         }
-        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState != PlayerMovement.PlayerState.climbing)
+        else if (Physics.Raycast(transform.position, transform.right, out hit, distToWall + 0.1f) && hit.collider.gameObject.tag == "wall" && pm.IsGrounded == false && pm.currentState == PlayerMovement.PlayerState.jumping && pm.currentState != PlayerMovement.PlayerState.walljumping)
         {
-            pm.currentState = PlayerMovement.PlayerState.wallrunning;
+            pm.currentState = PlayerMovement.PlayerState.rightwallrunning;
             pm.IsWallRunning = true;
             if (lastWall != hit.collider.gameObject)
             {
@@ -105,7 +106,7 @@ public class WallRunning : MonoBehaviour {
         }
         else
         {
-            //if (pm.IsGrounded && pm.currentState != PlayerMovement.PlayerState.moving) pm.currentState = PlayerMovement.PlayerState.idle;
+            //if (pm.IsGrounded && pm.currentState != PlayerMovement.PlayerState.movingforward) pm.currentState = PlayerMovement.PlayerState.idle;
             pm.IsWallRunning = false;
             pm.CanWallJump = false;
             pm.MaxSpeed = 6;

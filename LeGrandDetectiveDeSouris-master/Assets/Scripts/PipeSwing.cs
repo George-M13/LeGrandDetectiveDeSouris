@@ -8,6 +8,8 @@ public class PipeSwing : MonoBehaviour {
     PipeSwingStateSwitch pSwitch;
     public GameObject sp;
     public GameObject playerPos;
+    bool forwardPressed = false;
+    bool backwardPressed = false;
 
     public GameObject currentPipe;
     float tetherLength = 10;
@@ -74,25 +76,36 @@ public class PipeSwing : MonoBehaviour {
             }
             else this.transform.position = sp.transform.position;
 
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.W) && !forwardPressed)
             {
-                sp.GetComponent<Rigidbody>().AddForce(-sp.transform.forward * 3, ForceMode.Impulse);
+                sp.GetComponent<Rigidbody>().AddForce(-sp.transform.forward * 10, ForceMode.Impulse);
+                forwardPressed = true;
+                backwardPressed = false;
             }
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.S)&& !backwardPressed)
             {
-                sp.GetComponent<Rigidbody>().AddForce(sp.transform.forward * 3, ForceMode.Impulse);
+                
+                sp.GetComponent<Rigidbody>().AddForce(sp.transform.forward * 10, ForceMode.Impulse);
+                backwardPressed = true;
+                forwardPressed = false;
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 attached = false;
                 rb.useGravity = true;
                 pSwitch.dismounted = true;
+                backwardPressed = false;
+                forwardPressed = false;
                 currentPipe = null;
                 rb.velocity = Vector3.zero;
-                Debug.Log("AMJAMPINGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                //Debug.Log("AMJAMPINGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 rb.velocity = new Vector3(0, 3, 3);
                 //pm.currentState = PlayerMovement.PlayerState.pipejumping;
             }
+        }else
+        {
+            backwardPressed = false;
+            forwardPressed = false;
         }
         if (currentPipe != null)
         {

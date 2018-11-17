@@ -10,10 +10,18 @@ public class VerticalWallRun : MonoBehaviour
     public float height = 1;
     float counter = 0;
     float lastZ;
-     float startY = 40;
+    float startY = 50;
     public float y;
     public bool hasChecked = false;
+    public bool wallGrab = false;
+    public bool isGettingUp = false;
+
+    float h;
     GameObject lastWall = null;
+    Vector3 lastPos = new Vector3(0, 0, 0);
+
+
+    public GameObject Floor;
     // Use this for initialization
     void Start()
     {
@@ -28,14 +36,16 @@ public class VerticalWallRun : MonoBehaviour
         
         RaycastHit hit;
         float distToWall = this.GetComponent<SphereCollider>().bounds.extents.z;
-        if (Physics.Raycast(pos.transform.position, transform.forward, out hit, distToWall + 0.25f) && pm.IsGrounded == false  && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.walljumping) && lastWall != hit.collider.gameObject && hit.transform.tag == "wall")
+        //Debug.Log(pm.currentState);
+        if (Physics.Raycast(transform.position, transform.forward, out hit, distToWall + 0.25f) && pm.IsGrounded == false  && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.walljumping) && lastWall != hit.collider.gameObject && hit.transform.tag == "wall")
         {
-            Debug.Log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIT");
             if (lastWall != hit.collider.gameObject)
             {
+                //Debug.Log("dfkjedknf");
                 lastWall = hit.collider.gameObject;
                 lastZ = pm.zSpeed;
                 lastZ = pm.Map(1, 6, 5, 1, lastZ);
+                lastPos = this.transform.position;
                 //startY = 0f + lastZ/10;
                 //height = (lastWall.transform.localScale.y + lastZ);
                 hasChecked = true;
@@ -44,11 +54,39 @@ public class VerticalWallRun : MonoBehaviour
             //pm.zSpeed = lastSpeed + 2;
 
 
+        }else if(pm.currentState == PlayerMovement.PlayerState.climbing)
+        {
+            pm.currentState = PlayerMovement.PlayerState.climbing;
         }
 
-        if (y <= 2)
+        if (Input.GetKey(KeyCode.Mouse1) && pm.currentState == PlayerMovement.PlayerState.climbing)
         {
+            wallGrab = true;
 
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+
+
+                rb.velocity = transform.up * 2;
+                rb.velocity = transform.forward * 2;
+                pm.currentState = PlayerMovement.PlayerState.walljumping;
+            }
+            else
+            {
+                //Debug.Log("WHY");
+                pm.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            }
+        }
+        else if (y <= 2 && pm.currentState == PlayerMovement.PlayerState.climbing)
+        {
+            wallGrab = false;
+            pm.zSpeed = 0;
+
+
+            if (y <= 2)
+        {
+            pm.currentState = PlayerMovement.PlayerState.falling;
+            }
             /*if (Input.GetKey(KeyCode.W) )
             {
 
@@ -59,29 +97,12 @@ public class VerticalWallRun : MonoBehaviour
                 pm.currentState = PlayerMovement.PlayerState.walljumping;
                 y = 0;
             }*/
-            Debug.Log(this.transform.position.y);
-            if (Input.GetKey(KeyCode.Mouse1) && pm.currentState == PlayerMovement.PlayerState.climbing)
-            {
-                
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
 
-
-                    rb.velocity = transform.up * 2;
-                    rb.velocity = transform.forward * 2;
-                    pm.currentState = PlayerMovement.PlayerState.walljumping;
-                }else pm.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-            }
-            else
-            {
-                pm.zSpeed = 0;
-                pm.currentState = PlayerMovement.PlayerState.falling;
-            }
 
         }
         if (hasChecked && (pm.currentState == PlayerMovement.PlayerState.jumping || pm.currentState == PlayerMovement.PlayerState.climbing))
         {
-            Debug.Log(lastWall.gameObject.transform.lossyScale.y);
+            
 
             pm.currentState = PlayerMovement.PlayerState.climbing;
             //Debug.Log(y );
@@ -101,12 +122,27 @@ public class VerticalWallRun : MonoBehaviour
 
         }
        else y = startY;
-        
-        if (pm.currentState == PlayerMovement.PlayerState.climbing && this.transform.position.y >= (lastWall.gameObject.transform.lossyScale.y))
+        //Debug.Log(this.transform.position.y - Floor.transform.position.y);
+        RaycastHit wallHit;
+        Debug.Log(this.transform.position.y - pos.transform.localScale.y);
+        if (pm.currentState == PlayerMovement.PlayerState.climbing && !Physics.Raycast(new Vector3(this.transform.position.x, this.transform.position.y-0.5f, this.transform.position.z), transform.forward, out wallHit, 1f) && wallGrab == false)
         {
-            pm.zSpeed = 1;
-            pm.currentState = PlayerMovement.PlayerState.falling;
+            if (Physics.Raycast(new Vector3(this.transform.position.x, this.transform.position.y - pos.transform.localScale.y, this.transform.position.z), transform.forward, out wallHit, 1f)){
+                Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAH");
+                pm.zSpeed = 1;
+                rb.velocity = new Vector3(0, 0, 0);
+                pm.currentState = PlayerMovement.PlayerState.gettingup;
+            }
         }
+
+        if (pm.currentState == PlayerMovement.PlayerState.gettingup && !pm.IsGrounded)
+        {
+            if (h >= 2) pm.currentState = PlayerMovement.PlayerState.falling;
+            rb.velocity = new Vector3(0, h, h);
+            h = h + 0.05f;
+            
+        }
+        else h = 0;
                
 
             //Debug.Log(pos.transform.position);
@@ -116,6 +152,8 @@ public class VerticalWallRun : MonoBehaviour
             height = 1;
             hasChecked = false;
             lastWall = null;
+            lastPos = Vector3.zero;
         }
     }
+
 }

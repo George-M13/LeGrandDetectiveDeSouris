@@ -30,7 +30,7 @@ public class PipeSwingStateSwitch : MonoBehaviour {
     {
         if (col.transform.tag == "player" && !this.dismounted)
         {
-
+            ps.playerPos = this.transform.gameObject;
             pm.currentState = PlayerMovement.PlayerState.pipeswinging;
             ps.currentPipe = this.transform.gameObject;
             ps.sp = swingPoint;

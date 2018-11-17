@@ -33,7 +33,7 @@ public class Slippery : MonoBehaviour {
             rb.AddForce(Vector3.forward * speed, ForceMode.Force);
             speed += Time.deltaTime*(angle * Slippyness);
 
-            rb.gameObject.GetComponent<PlayerMovement>().currentState = PlayerMovement.PlayerState.moving;
+            rb.gameObject.GetComponent<PlayerMovement>().currentState = PlayerMovement.PlayerState.movingforward;
         }
         else
         {

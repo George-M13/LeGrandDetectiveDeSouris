@@ -93,13 +93,13 @@ public class ArmContoller : MonoBehaviour
             currentForearmCycle++;
             if (currentForearmCycle == ForearmRun.Count) currentForearmCycle = 0;
         }
-        Debug.Log(BegOfArmContainer.transform.rotation);
+        /*Debug.Log(BegOfArmContainer.transform.rotation);
 
         Debug.Log(ForeArmAdjusted);
         Debug.Log(new Quaternion(ForeArmAdjusted.x * -1, ForeArmAdjusted.y * -1, ForeArmAdjusted.z * -1, ForeArmAdjusted.w * -1));
 
         BegOfArmContainer.transform.rotation = Quaternion.Lerp(BegOfArmContainer.transform.rotation, ForeArmAdjusted, step);
-        EndOfArmContainer.transform.rotation = Quaternion.Lerp(EndOfArmContainer.transform.rotation, UpperArmAdjusted, step);
+        EndOfArmContainer.transform.rotation = Quaternion.Lerp(EndOfArmContainer.transform.rotation, UpperArmAdjusted, step);*/
 
         /*
         else if (BegOfArmContainer.transform.rotation == Quaternion.Euler(ForearmRun2))

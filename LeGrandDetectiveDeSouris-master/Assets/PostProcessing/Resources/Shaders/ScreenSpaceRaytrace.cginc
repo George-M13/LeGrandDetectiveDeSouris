@@ -42,7 +42,7 @@ void rayIterations(in bool traceBehindObjects, inout float2 P, inout float stepD
     for (; (P.x * stepDirection) <= end && stepCount < maxSteps && !stop; P += dP, Q.z += dQ.z, k += dk, stepCount += 1)
     {
         // The depth range that the ray covers within this loop iteration.
-        // Assume that the ray is moving in increasing z and swap if backwards.
+        // Assume that the ray is movingforward in increasing z and swap if backwards.
         rayZMin = prevZMaxEstimate;
         //rayZMin = (dQ.z * -0.5 + Q.z) / (dk * -0.5 + k);
         // Compute the value at 1/2 pixel into the future

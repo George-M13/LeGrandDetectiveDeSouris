@@ -34,7 +34,7 @@ public class Slide : MonoBehaviour {
             _camera.transform.position = NewHeight.transform.position;
             pm.IsSliding = true;
             Sliding();
-            Debug.Log(rb.velocity.z);
+            //Debug.Log(rb.velocity.z);
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl))
         {
@@ -48,6 +48,7 @@ public class Slide : MonoBehaviour {
 
     void Sliding()
     {
+        pm.currentState = PlayerMovement.PlayerState.sliding;
         pm.zSpeed = speed;
         speed = speed - 3*Time.deltaTime;
     }

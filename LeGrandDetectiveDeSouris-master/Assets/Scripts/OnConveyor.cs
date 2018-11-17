@@ -38,7 +38,7 @@ public class OnConveyor : MonoBehaviour {
     {
         if (coll.transform.gameObject.tag == "player")
         {
-            if (pm.currentState != PlayerMovement.PlayerState.moving) pm.z = 1;
+            if (pm.currentState != PlayerMovement.PlayerState.movingforward) pm.z = 1;
 
         }
     }
