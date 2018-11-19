@@ -28,7 +28,7 @@ public class LookController : MonoBehaviour {
         rotY += mouseY * mouseSens * Time.deltaTime;
         rotY = Mathf.Clamp(rotY, -80f, 80f);
 
-        if (!pm.IsWallRunning)
+        if (pm.currentState != PlayerMovement.PlayerState.leftwallrunning && pm.currentState != PlayerMovement.PlayerState.rightwallrunning && pm.currentState != PlayerMovement.PlayerState.gettingup)
         {
             Quaternion playerRot = Quaternion.Euler(0.0f, rotX, 0.0f);//Store just the x rotation
             player.transform.rotation = playerRot;//Rotate the player by the x axis with the camera
